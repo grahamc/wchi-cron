@@ -27,7 +27,7 @@ function wchi_install() {
   time int NOT NULL,
   name varchar(255) NOT NULL,
   job text NOT NULL,
-  UNIQUE KEY id (id)
+  UNIQUE KEY id (id),
   UNIQUE KEY cron_time_name(time, name)
   );";
 
