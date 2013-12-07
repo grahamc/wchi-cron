@@ -95,9 +95,7 @@ function wchi_cron_read($null)
     $return[$time][$name] = $job_content;
   }
 
-  var_dump($return);
-
-  die('wat');
+  return $return;
 }
 
 function wchi_remove_job($job)
