@@ -19,18 +19,16 @@ function wchi_cron_write($value, $old_value)
 
   wchi_transaction_begin();
 
-  if (get_option('wpchi-cron-overthrown') == false) {
+  if (get_option('wpchi-cron-overthrow') == false) {
     # For the first import, set the old value to an empty array
     # so all entries are imported
     $old_value = array();
   }
 
-  $currentValues = calculate_rows($old_value);
-  $newValues = calculate_rows($value);
+  $to_remove = calculate_diff($old_value, $new_value);
+  $to_add = calculate_diff($new_value, $old_value);
 
-  var_dump($currentValues);
-  var_dump($newValues);
-
+  var_dump($to_remove, $to_add);
 
   wchi_transaction_end();
 
@@ -58,17 +56,45 @@ function pre_option_cron()
 function calculate_rows($value)
 {
   $rows = array();
-  foreach ($value as $timestamp => $contents) {
-    foreach ($contents as $name => $job) {
-      $rows[] = array(
-        'timestamp' => $timestamp,
-        'name' => $name,
-        'job' => $job
-      );
-    }
+  foreach ($value as $timestamp => $jobs) {
+    $rows = array_merge($rows, calculate_rows_for_time($timestamp, $jobs));
   }
 
   return $rows;
+}
+
+function calculate_rows_for_time($timestamp, $jobs)
+{
+  $rows= array();
+  foreach ($jobs as $name => $job) {
+    $rows[] = create_row_for_time_name($timestamp, $name, $job);
+  }
+}
+
+function create_row_for_time_name($timestamp, $name, $job)
+{
+    return array(
+      'timestamp' => $timestamp,
+      'name' => $name,
+      'job' => maybe_serialize($job)
+    );
+
+}
+
+function calculate_diff($left_value, $right_value)
+{
+  $not_equal = array();
+  foreach ($left_value as $timestamp => $contents) {
+    foreach ($contents as $name => $job) {
+      if (!isset($right_value[$timestamp][$name])) {
+        $not_equal[] = create_row_for_time_name($timestamp, $name, $job);
+      } else if ($right_value[$timestamp][$name] !== $job) {
+        $not_equal[] = create_row_for_time_name($timestamp, $name, $job);
+      }
+    }
+  }
+
+  return $not_equal;
 }
 
 function wchi_transaction_begin()
