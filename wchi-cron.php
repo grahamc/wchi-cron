@@ -64,20 +64,15 @@ function wchi_cron_write($value, $old_value)
   }
 
 
-  var_dump($to_remove, $to_add);
-
+  update_option('wpchi-cron-overthrow', true);
   wchi_transaction_end();
 
-  var_export($value);
-  exit(1);
-
-  update_option('wpchi-cron-overthrow', true);
 }
 
 function pre_option_cron()
 {
   if (!get_option('wpchi-cron-overthrow')) {
-    #return false;
+    return false;
   }
   $return = array();
   if (has_option('wpchi-cron-version')) {
