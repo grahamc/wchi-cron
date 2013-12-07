@@ -10,7 +10,7 @@
 require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 register_activation_hook( __FILE__, 'wchi_install');
 add_filter('pre_update_option_cron', 'wchi_cron_write', 99, 2);
-add_filter('pre_option_cron', 'wchi_cron_read', 99);
+add_filter('pre_option_cron', 'wchi_cron_read', 99, 0);
 
 function wchi_table_name()
 {
@@ -70,25 +70,30 @@ function wchi_cron_write($value, $old_value)
 
 }
 
-function pre_option_cron()
+function wchi_cron_read($null)
 {
   global $wpdb;
-highlight_file(__FILE__);
- die('OH MYGOD I AM RUNNING');
-var_dump(get_option('wchi-cron-overthrow'));
-die();
-  if (!get_option('wchi-cron-overthrow')) {
+  if (get_option('wchi-cron-overthrow') != '1') {
     return false;
   }
+
   $return = array();
-  if (has_option('wchi-cron-version')) {
+  if (get_option('wchi-cron-version', false) !== false) {
     $return['version'] = get_option('wchi-cron-version');
   }
 
   $jobs = $wpdb->get_results('SELECT time, name, job FROM ' . wchi_table_name());
 
+  foreach ($jobs as $job) {
+    $time = $job->time;
+    $name = $job->name;
+    $job_content = maybe_unserialize($job->job);
 
-  var_dump($jobs);
+    if (!isset($return[$time])) {
+      $return[$time] = array();
+    }
+    $return[$time][$name] = $job_content;
+  }
 
   var_dump($return);
 
