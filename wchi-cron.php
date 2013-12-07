@@ -12,6 +12,10 @@ add_filter('pre_option_cron', 'wchi_cron_read', 99);
 
 function wchi_cron_write($value, $old_value)
 {
+  if (isset($value['version'])) {
+    update_option('wchi-cron-version', $value['version']);
+    unset($value['version']);
+  }
   var_export($value);
   exit(1);
 
@@ -21,9 +25,14 @@ function wchi_cron_write($value, $old_value)
 function pre_option_cron()
 {
   if (!get_option('wpchi-cron-overthrow')) {
-    die('wat');
-    return false;
+    #return false;
   }
+  $return = array();
+  if (has_option('wpchi-cron-version')) {
+    $return['version'] = get_option('wpchi-cron-version');
+  }
+
+  var_dump($return);
 
   die('wat');
 }
