@@ -7,8 +7,35 @@
  * Description: Make cron more efficient.
  */
 
+require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+register_activation_hook( __FILE__, 'wchi_install');
 add_filter('pre_update_option_cron', 'wchi_cron_write', 99, 2);
 add_filter('pre_option_cron', 'wchi_cron_read', 99);
+
+function wchi_table_name()
+{
+  global $wpdb;
+  return $wpdb->prefix . '_wchi_cron';
+}
+
+function wchi_install() {
+  global $wpdb;
+
+  $table_name = wchi_table_name();
+  $sql = "CREATE TABLE $table_name (
+  id mediumint(9) NOT NULL AUTO_INCREMENT,
+  time int NOT NULL,
+  name varchar(255) NOT NULL,
+  job text NOT NULL,
+  UNIQUE KEY id (id)
+  UNIQUE KEY cron_time_name(time, name)
+  );";
+
+  dbDelta( $sql );
+
+  add_option( "wchi_table_version", 1 );
+}
+
 
 function wchi_cron_write($value, $old_value)
 {
@@ -67,7 +94,7 @@ function wchi_remove_job($job)
   global $wpdb;
 
   $wpdb->delete(
-    'wpchi-cron',
+    wchi_table_name(),
     array(
       'timestamp' => $job['timestamp'],
       'name' => $job['name'],
@@ -80,7 +107,7 @@ function wchi_insert_job($job)
   global $wpdb;
 
   $wpdb->insert(
-    'wpchi-cron',
+    wchi_table_name(),
     array(
       'timestamp' => $job['timestamp'],
       'name' => $job['name'],
