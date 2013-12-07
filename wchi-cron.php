@@ -95,6 +95,8 @@ function wchi_cron_read($null)
     $return[$time][$name] = $job_content;
   }
 
+  ksort($return);
+
   return $return;
 }
 
