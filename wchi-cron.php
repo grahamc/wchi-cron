@@ -91,7 +91,7 @@ function wchi_remove_job($job)
   $wpdb->delete(
     wchi_table_name(),
     array(
-      'timestamp' => $job['timestamp'],
+      'time' => $job['timestamp'],
       'name' => $job['name'],
     )
   );
@@ -104,7 +104,7 @@ function wchi_insert_job($job)
   $wpdb->insert(
     wchi_table_name(),
     array(
-      'timestamp' => $job['timestamp'],
+      'time' => $job['timestamp'],
       'name' => $job['name'],
       'job' => $job['job'],
     ),
