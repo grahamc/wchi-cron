@@ -12,7 +12,7 @@ add_filter('pre_option_cron', 'wchi_cron_read', 99);
 
 function wchi_cron_write($value, $old_value)
 {
-  var_dump($value);
+  var_export($value);
   exit(1);
 
   update_option('wpchi-cron-overthrow', true);
