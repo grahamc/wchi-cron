@@ -25,8 +25,17 @@ function wchi_cron_write($value, $old_value)
     $old_value = array();
   }
 
-  $to_remove = calculate_diff($old_value, $new_value);
-  $to_add = calculate_diff($new_value, $old_value);
+  $to_remove = calculate_diff($old_value, $value);
+  $to_add = calculate_diff($value, $old_value);
+
+  foreach($to_remove as $job) {
+    wchi_remove_job($job);
+  }
+
+  foreach($to_add as $job) {
+    wchi_insert_job($job);
+  }
+
 
   var_dump($to_remove, $to_add);
 
@@ -51,6 +60,27 @@ function pre_option_cron()
   var_dump($return);
 
   die('wat');
+}
+
+function wchi_remove_job($job)
+{
+  global $wpdb;
+
+  $time = $job['timestamp'];
+  $name = $job['name'];
+
+  echo "DELETE FROM wchi-cron WHERE time=$time AND name=$name)\n";
+}
+
+function wchi_insert_job($job)
+{
+  global $wpdb;
+
+  $time = $job['timestamp'];
+  $name = $job['name'];
+  $job = $job['job'];
+
+  echo "INSERT INTO wchi-cron (timestamp, name, job) VALUES ($time, $name, $job)\n";
 }
 
 function calculate_rows($value)
@@ -83,18 +113,18 @@ function create_row_for_time_name($timestamp, $name, $job)
 
 function calculate_diff($left_value, $right_value)
 {
-  $not_equal = array();
+  $not_in_right  = array();
   foreach ($left_value as $timestamp => $contents) {
     foreach ($contents as $name => $job) {
       if (!isset($right_value[$timestamp][$name])) {
-        $not_equal[] = create_row_for_time_name($timestamp, $name, $job);
+        $not_in_right[] = create_row_for_time_name($timestamp, $name, $job);
       } else if ($right_value[$timestamp][$name] !== $job) {
-        $not_equal[] = create_row_for_time_name($timestamp, $name, $job);
+        $not_in_right[] = create_row_for_time_name($timestamp, $name, $job);
       }
     }
   }
 
-  return $not_equal;
+  return $not_in_right;
 }
 
 function wchi_transaction_begin()
