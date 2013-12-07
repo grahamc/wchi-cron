@@ -7,3 +7,24 @@
  * Description: Make cron more efficient.
  */
 
+add_filter('pre_update_option_cron', 'wchi_cron_write', 99, 2);
+add_filter('pre_option_cron', 'wchi_cron_read', 99);
+
+function wchi_cron_write($value, $old_value)
+{
+  var_dump($value);
+  exit(1);
+
+  update_option('wpchi-cron-overthrow', true);
+}
+
+function pre_option_cron()
+{
+  if (!get_option('wpchi-cron-overthrow') {
+    die('wat');
+    return false;
+  }
+
+  die('wat');
+}
+
