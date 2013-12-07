@@ -15,7 +15,7 @@ add_filter('pre_option_cron', 'wchi_cron_read', 99);
 function wchi_table_name()
 {
   global $wpdb;
-  return $wpdb->prefix . '_wchi_cron';
+  return $wpdb->prefix . 'wchi_cron';
 }
 
 function wchi_install() {
