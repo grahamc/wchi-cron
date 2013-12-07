@@ -66,21 +66,28 @@ function wchi_remove_job($job)
 {
   global $wpdb;
 
-  $time = $job['timestamp'];
-  $name = $job['name'];
-
-  echo "DELETE FROM wchi-cron WHERE time=$time AND name=$name)\n";
+  $wpdb->delete(
+    'wpchi-cron',
+    array(
+      'timestamp' => $job['timestamp'],
+      'name' => $job['name'],
+    )
+  );
 }
 
 function wchi_insert_job($job)
 {
   global $wpdb;
 
-  $time = $job['timestamp'];
-  $name = $job['name'];
-  $job = $job['job'];
-
-  echo "INSERT INTO wchi-cron (timestamp, name, job) VALUES ($time, $name, $job)\n";
+  $wpdb->insert(
+    'wpchi-cron',
+    array(
+      'timestamp' => $job['timestamp'],
+      'name' => $job['name'],
+      'job' => $job['job'],
+    ),
+    array('%s', '%s', '%s')
+  );
 }
 
 function calculate_rows($value)
