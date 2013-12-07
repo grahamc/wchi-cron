@@ -39,12 +39,13 @@ function wchi_install() {
 
 function wchi_cron_write($value, $old_value)
 {
+
+  wchi_transaction_begin();
+
   if (isset($value['version'])) {
     update_option('wchi-cron-version', $value['version']);
     unset($value['version']);
   }
-
-  wchi_transaction_begin();
 
   if (get_option('wchi-cron-overthrow') == false) {
     # For the first import, set the old value to an empty array
@@ -72,6 +73,8 @@ function wchi_cron_write($value, $old_value)
 function pre_option_cron()
 {
   global $wpdb;
+highlight_file(__FILE__);
+ die('OH MYGOD I AM RUNNING');
 var_dump(get_option('wchi-cron-overthrow'));
 die();
   if (!get_option('wchi-cron-overthrow')) {
