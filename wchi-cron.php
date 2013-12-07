@@ -20,7 +20,7 @@ function wchi_cron_write($value, $old_value)
 
 function pre_option_cron()
 {
-  if (!get_option('wpchi-cron-overthrow') {
+  if (!get_option('wpchi-cron-overthrow')) {
     die('wat');
     return false;
   }
