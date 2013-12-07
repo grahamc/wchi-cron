@@ -53,8 +53,8 @@ function wchi_cron_write($value, $old_value)
     $old_value = array();
   }
 
-  $to_remove = calculate_diff($old_value, $value);
-  $to_add = calculate_diff($value, $old_value);
+  $to_remove = wchi_calculate_diff($old_value, $value);
+  $to_add = wchi_calculate_diff($value, $old_value);
 
   foreach($to_remove as $job) {
     wchi_remove_job($job);
@@ -128,25 +128,25 @@ function wchi_insert_job($job)
   );
 }
 
-function calculate_rows($value)
+function wchi_calculate_rows($value)
 {
   $rows = array();
   foreach ($value as $timestamp => $jobs) {
-    $rows = array_merge($rows, calculate_rows_for_time($timestamp, $jobs));
+    $rows = array_merge($rows, wchi_calculate_rows_for_time($timestamp, $jobs));
   }
 
   return $rows;
 }
 
-function calculate_rows_for_time($timestamp, $jobs)
+function wchi_calculate_rows_for_time($timestamp, $jobs)
 {
   $rows= array();
   foreach ($jobs as $name => $job) {
-    $rows[] = create_row_for_time_name($timestamp, $name, $job);
+    $rows[] = wchi_create_row_for_time_name($timestamp, $name, $job);
   }
 }
 
-function create_row_for_time_name($timestamp, $name, $job)
+function wchi_create_row_for_time_name($timestamp, $name, $job)
 {
     return array(
       'timestamp' => $timestamp,
@@ -156,15 +156,15 @@ function create_row_for_time_name($timestamp, $name, $job)
 
 }
 
-function calculate_diff($left_value, $right_value)
+function wchi_calculate_diff($left_value, $right_value)
 {
   $not_in_right  = array();
   foreach ($left_value as $timestamp => $contents) {
     foreach ($contents as $name => $job) {
       if (!isset($right_value[$timestamp][$name])) {
-        $not_in_right[] = create_row_for_time_name($timestamp, $name, $job);
+        $not_in_right[] = wchi_create_row_for_time_name($timestamp, $name, $job);
       } else if ($right_value[$timestamp][$name] !== $job) {
-        $not_in_right[] = create_row_for_time_name($timestamp, $name, $job);
+        $not_in_right[] = wchi_create_row_for_time_name($timestamp, $name, $job);
       }
     }
   }
