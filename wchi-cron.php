@@ -71,6 +71,9 @@ function wchi_cron_write($value, $old_value)
 
 function pre_option_cron()
 {
+  global $wpdb;
+var_dump(get_option('wchi-cron-overthrow'));
+die();
   if (!get_option('wchi-cron-overthrow')) {
     return false;
   }
@@ -79,6 +82,10 @@ function pre_option_cron()
     $return['version'] = get_option('wchi-cron-version');
   }
 
+  $jobs = $wpdb->get_results('SELECT time, name, job FROM ' . wchi_table_name());
+
+
+  var_dump($jobs);
 
   var_dump($return);
 
