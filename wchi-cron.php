@@ -46,7 +46,7 @@ function wchi_cron_write($value, $old_value)
 
   wchi_transaction_begin();
 
-  if (get_option('wpchi-cron-overthrow') == false) {
+  if (get_option('wchi-cron-overthrow') == false) {
     # For the first import, set the old value to an empty array
     # so all entries are imported
     $old_value = array();
@@ -64,20 +64,21 @@ function wchi_cron_write($value, $old_value)
   }
 
 
-  update_option('wpchi-cron-overthrow', true);
+  update_option('wchi-cron-overthrow', true);
   wchi_transaction_end();
 
 }
 
 function pre_option_cron()
 {
-  if (!get_option('wpchi-cron-overthrow')) {
+  if (!get_option('wchi-cron-overthrow')) {
     return false;
   }
   $return = array();
-  if (has_option('wpchi-cron-version')) {
-    $return['version'] = get_option('wpchi-cron-version');
+  if (has_option('wchi-cron-version')) {
+    $return['version'] = get_option('wchi-cron-version');
   }
+
 
   var_dump($return);
 
