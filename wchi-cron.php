@@ -9,8 +9,11 @@
 
 require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 register_activation_hook( __FILE__, 'wchi_install');
+register_deactivation_hook(__FILE__, 'wchi_deactivate');
+
 add_filter('pre_update_option_cron', 'wchi_cron_write', 99, 2);
 add_filter('pre_option_cron', 'wchi_cron_read', 99, 0);
+
 
 function wchi_table_name()
 {
@@ -34,6 +37,14 @@ function wchi_install() {
   dbDelta( $sql );
 
   add_option( "wchi_table_version", 1 );
+}
+
+function wchi_deactivate()
+{
+  $cron = wchi_cron_read();
+
+  remove_filter('pre_update_option_cron', 'wchi_cron_write', 99, 2);
+  update_option('cron', $cron);
 }
 
 
